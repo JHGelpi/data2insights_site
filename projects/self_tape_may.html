@@ -5,6 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Self Tape May Engagement</title>
     <link rel="stylesheet" href="../styles.css">
+    <style>
+        .tab-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .tabs {
+            display: flex;
+            cursor: pointer;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+        }
+
+        .tab.active {
+            background-color: #4a90e2;
+            color: white;
+        }
+
+        .tab-content {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+        }
+
+        .tab-content div {
+            display: none;
+        }
+
+        .tab-content .active-content {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -19,12 +57,44 @@
     </header>
 
     <section id="project-details">
-        <h2>Self Tape May Engagement</h2>
-        <p>Details about the "Self Tape May Engagement" project will go here. This page will be updated regularly to show the progress and insights from this engagement.</p>
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" id="main-tab">Main</div>
+                <div class="tab" id="privacy-policy-tab">Privacy Policy</div>
+            </div>
+            <div class="tab-content">
+                <div id="main-content" class="active-content">
+                    <h2>Self Tape May Engagement</h2>
+                    <p>Details about the "Self Tape May Engagement" project will go here. This page will be updated regularly to show the progress and insights from this engagement.</p>
+                </div>
+                <div id="privacy-policy-content">
+                    <h2>Privacy Policy</h2>
+                    <p>This Privacy Policy explains how Data2Insights, LLC handles your data and protects your privacy while using the "Self Tape May Engagement" project. Your data is handled with the utmost care, and we make every effort to ensure it is kept secure and confidential.</p>
+                </div>
+            </div>
+        </div>
     </section>
 
     <footer>
         <p>&copy; 2024 Data2Insights, LLC. All rights reserved.</p>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content div');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active-content'));
+
+                    tab.classList.add('active');
+                    const targetContent = document.getElementById(tab.id.replace('-tab', '-content'));
+                    targetContent.classList.add('active-content');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
