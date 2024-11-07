@@ -87,6 +87,29 @@ header a {
     background-color: #367bb5; /* Slightly darker on hover */
 }
 
+#projects {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.project-card {
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #FFF;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+}
+
+.project-card h3 {
+    margin-bottom: 10px;
+}
+
+.project-card p {
+    margin-bottom: 20px;
+}
+
 section {
     padding: 50px 20px;
     text-align: center;
