@@ -132,6 +132,8 @@
         document.addEventListener('DOMContentLoaded', function () {
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content div');
+            const consoleTab = document.getElementById('self-tape-may-console-tab');
+            const consoleContent = document.getElementById('console-content');
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', function () {
@@ -139,29 +141,32 @@
                     tabContents.forEach(content => content.classList.remove('active-content'));
 
                     tab.classList.add('active');
-                    const targetContent = document.getElementById(tab.id.replace('-tab', '-content'));
+                    // const targetContent = document.getElementById(tab.id.replace('-tab', '-content'));
+                    const targetContent = document.getElementById(tab.id.replace('-tab', ''));
                     targetContent.classList.add('active-content');
                 });
             });
-
-            // Load the content of self_tape_may_console.html into the console tab
-            const consoleContainer = document.getElementById('console-content');
-            fetch('self_tape_may/self_tape_may_console.html')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Failed to load console content: ${response.statusText}`);
-                    }
-                    return response.text();
-                })
-                .then(html => {
-                    consoleContainer.innerHTML = html;
-                })
-                .catch(error => {
-                    console.error('Error loading console content:', error);
-                    consoleContainer.innerHTML = '<p>Failed to load content. Please try again later.</p>';
-                });
+            
+            if (tab.id === 'self-tape-may-console-tab' && !consoleContent.dataset.loaded) {
+                // Load the content of self_tape_may_console.html into the console tab
+                const consoleContainer = document.getElementById('console-content');
+                fetch('self_tape_may/self_tape_may_console.html')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Failed to load console content: ${response.statusText}`);
+                        }
+                        return response.text();
+                    })
+                    .then(html => {
+                        consoleContainer.innerHTML = html;
+                        consoleContent.dataset.loaded = true; // Mark content as loaded
+                    })
+                    .catch(error => {
+                        console.error('Error loading console content:', error);
+                        consoleContainer.innerHTML = '<p>Failed to load content. Please try again later.</p>';
+                    });
+            }
         });
     </script>
-    
 </body>
 </html>
