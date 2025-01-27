@@ -42,6 +42,30 @@
         .tab-content .active-content {
             display: block;
         }
+        .spinner {
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .spinner:after {
+            content: ' ';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #4a90e2;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
@@ -94,7 +118,7 @@
                 </div>
                 <div id="self-tape-may-console" style="text-align: left;">
                     <h2>Self Tape May Console</h2>
-                    <div id="console-content">Loading...</div> <!-- Placeholder for embedded content -->
+                    <div id="console-content" class="spinner">Loading...</div> <!-- Placeholder for embedded content -->
                 </div>
             </div>
         </div>
@@ -105,39 +129,21 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content div');
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active-content'));
-
-                    tab.classList.add('active');
-                    const targetContent = document.getElementById(tab.id.replace('-tab', '-content'));
-                    targetContent.classList.add('active-content');
-                });
-            });
-        });
-    </script>
-    <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Tab switching logic (already in your script)
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content div');
-    
+
             tabs.forEach(tab => {
                 tab.addEventListener('click', function () {
                     tabs.forEach(t => t.classList.remove('active'));
                     tabContents.forEach(content => content.classList.remove('active-content'));
-    
+
                     tab.classList.add('active');
                     const targetContent = document.getElementById(tab.id.replace('-tab', '-content'));
                     targetContent.classList.add('active-content');
                 });
             });
-    
+
             // Load the content of self_tape_may_console.html into the console tab
             const consoleContainer = document.getElementById('console-content');
             fetch('self_tape_may/self_tape_may_console.html')
