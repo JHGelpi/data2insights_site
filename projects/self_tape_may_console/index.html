@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self Tape May Control Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #ffffff;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .alert {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginForm" class="container" style="text-align: left;">
+        <!-- Flex container for icon and Login text -->
+        <div style="display: flex; align-items: center; justify-content: left; margin-bottom: 10px;">
+            <!-- Icon -->
+            <i class="fas fa-user-circle" style="font-size: 50px; color: #007bff; margin-right: 10px;"></i>
+            <img src="favicon.ico" alt="Login Icon" style="width: 50px; height: 50px; margin-right: 10px;">
+            <!-- Login Header -->
+            <h1 style="margin: 0; position: relative; top: 13px;">Login</h1>
+        </div>
+    
+        <!-- Login Alert -->
+        <div class="alert" id="loginAlert" style="margin-bottom: 10px;"></div>
+    
+        <!-- Username -->
+        <label for="username" style="margin-top: 10px; display: block;">Username:</label>
+        <input type="text" id="username" placeholder="Enter username" style="margin-bottom: 10px;">
+    
+        <!-- Password -->
+        <label for="password" style="margin-top: 10px; display: block;">Password:</label>
+        <input type="password" id="password" placeholder="Enter password" style="margin-bottom: 20px;">
+    
+        <!-- Button -->
+        <button onclick="login()" style="margin-top: 10px;">Login</button>
+    </div>
+        
+
+    <!-- Script Control Panel -->
+    <div id="controlPanel" class="container hidden">
+        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+            <!-- Icon -->
+            <i class="fas fa-user-circle" style="font-size: 50px; color: #007bff; margin-right: 10px;"></i>
+            <img src="favicon.ico" alt="Login Icon" style="width: 100px; height: 100px; margin-right: 10px;">
+            <!-- Login Header -->
+            <h1 style="margin: 0; position: relative; top: 37px;">Self Tape May Control Panel</h1>
+        </div>
+        
+        <!-- Add this div for showing trigger script messages -->
+        <div id="triggerMessage" style="text-align: center; margin-bottom: 10px;"></div>
+        
+        <button onclick="triggerScript()">One-off run of Self Tape May data import</button>
+    
+        <h2>Schedule Self Tape May data import</h2>
+        <label for="interval">Interval (in minutes):</label>
+        <input type="number" id="interval" min="1" placeholder="Enter interval">
+    
+        <label for="startDate">Start Date:</label>
+        <input type="datetime-local" id="startDate">
+    
+        <label for="endDate">End Date:</label>
+        <input type="datetime-local" id="endDate">
+    
+        <button onclick="scheduleScript()">Set Schedule</button>
+    </div>
+
+    <div id="instagramDataContainer" class="hidden">
+        <h2>Instagram Data</h2>
+        <table id="instagramDataTable" border="1" style="width:100%; margin-top:20px; text-align:left;">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Instagram Username</th>
+                    <th>Type</th>
+                    <th>URL</th>
+                    <th>Hashtag</th>
+                    <th>Campaign Hashtag</th>
+                    <th>Timestamp</th>
+                    <th>Run ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data rows will be appended here dynamically -->
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        //const BASE_URL = 'https://136.56.77.229:5000'; // Your Flask server's URL
+        //const BASE_URL = 'https://127.0.0.1:5000'; // Your Flask server's URL
+
+        async function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const alertBox = document.getElementById('loginAlert');
+
+            if (!username || !password) {
+                alertBox.textContent = "Please enter both username and password.";
+                return;
+            }
+
+            //console.log("Attempting login with username:", username);
+
+            try {
+                //const response = await fetch(`${BASE_URL}/login`, { // Use BASE_URL
+                const response = await fetch(`/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                console.log("Response status:", response.status);
+
+                if (response.status === 200) {
+                    alertBox.textContent = '';
+                    const data = await response.json();
+                    //alert('Login successful');
+                    document.getElementById('loginForm').classList.add('hidden');
+                    document.getElementById('controlPanel').classList.remove('hidden');
+                    document.getElementById('instagramDataContainer').classList.remove('hidden'); // Show table after login
+                } else {
+                    const errorData = await response.json();
+                    console.error("Error response:", errorData);
+                    alertBox.textContent = "Invalid username or password.";
+                }
+            } catch (error) {
+                console.error("Login request failed:", error);
+                alertBox.textContent = "An error occurred while logging in.";
+            }
+        }
+        
+        
+        async function fetchInstagramData() {
+            console.log('Triggering fetchInstagramData after successful script execution');
+            try {
+                const response = await fetch('/get-instagram-data');
+                // Check if the response content type is JSON
+                const contentType = response.headers.get('content-type');
+
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Invalid response format: Expected JSON');
+                }
+
+                //const textResponse = await response.text(); // Read the response as text
+
+                //const data = JSON.parse(textResponse); // Parse the response as JSON
+                const data = await response.json(); // Parse the response as JSON
+                //console.log('Data received from /get-instagram-data:', data); // Debugging log
+
+                if (response.ok) {
+                    const tableBody = document.getElementById('instagramDataTable').querySelector('tbody');
+                    tableBody.innerHTML = ''; // Clear existing rows
+                    
+                    setTimeout(() => {
+                        console.log('Populating the table after the delay');
+
+                        data.forEach(row => {
+                            //console.log('Adding row to table:', row); // Debugging log
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${row.user_id || ''}</td>
+                                <td>${row.instagram_username || ''}</td>
+                                <td>${row.type || ''}</td>
+                                <td><a href="${row.url || '#'}" target="_blank">${row.url || ''}</a></td>
+                                <td>${row.hashtag || ''}</td>
+                                <td>${row.campaign_hashtag || ''}</td>
+                                <td>${row.timestamp || ''}</td>
+                                <td>${row.run_id || ''}</td>
+                            `;
+                            document.getElementById('instagramDataTable').querySelector('tbody').appendChild(tr);
+                            //tableBody.appendChild(tr);
+                        });
+                    }, 500);
+                } else {
+                    console.error('Failed to fetch data:', data.error || 'Unknown error');
+                    alert(`Error fetching data: ${data.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error fetching Instagram data:', error);
+                alert(`An error occurred while fetching data: ${error.message}`);
+            }
+        }
+
+        //Trigger data fetch wehn the page loads
+        //document.addEventListener('DOMContentLoaded', fetchInstagramData);
+
+        async function triggerScript() {
+            const triggerMessage = document.getElementById('triggerMessage');
+
+            // Clear previous messages
+            triggerMessage.textContent = '';
+            triggerMessage.style.color = ''; // Reset color
+
+            try {
+                triggerMessage.textContent = 'Running Instagram data import...';
+                triggerMessage.style.color = 'yellow'; // Reset color
+
+                const response = await fetch('/trigger-script', { method: 'POST' });
+                
+                console.log('Response status:', response.status);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    //triggerMessage.textContent = data.message;
+                    await fetchInstagramData();
+                    triggerMessage.textContent = 'Run completed successfully';
+                    triggerMessage.style.color = 'green';
+                    //alert(data.message);
+                    setTimeout(() => {
+                        triggerMessage.textContent = ''
+                    }, 3000)
+
+                    
+                } else {
+                    const errorData = await response.json();
+                    console.error('Error response:', errorData);
+                    triggerMessage.textContent = `Error: ${errorData.error}`;
+                    triggerMessage.style.color = 'red'; // Error message in red
+                    //alert(`Error: ${errorData.error}`);
+                }
+            } catch (error) {
+                console.error('Unexpected error:', error);
+                alert(`An unexpected error occurred: ${error}`);
+            }
+        }
+
+        async function scheduleScript() {
+            const interval = document.getElementById('interval').value.trim();
+            const startDate = document.getElementById('startDate').value.trim();
+            const endDate = document.getElementById('endDate').value.trim();
+
+            if (!interval || !startDate || !endDate) {
+                alert("Please fill in all fields for scheduling the script.");
+                return;
+            }
+
+            const response = await fetch('/schedule-script', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ interval, startDate, endDate })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert(data.message);
+            } else {
+                alert("Error scheduling the script.");
+            }
+        }
+    </script>
+</body>
+</html>
